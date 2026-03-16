@@ -21,7 +21,7 @@ services:
       - PASSWORD=${VNC_PASSWORD:-password}
       - TITLE=OpenClaw Desktop
       - OPENCLAW_HOME=/config/
-      - GATEWAY_TOKEN=12345
+      - GATEWAY_TOKEN=${GATEWAY_TOKEN:-changeme}
       - NODE_ENV=production
       - PLAYWRIGHT_BROWSERS_PATH=/usr/lib/playwright
     shm_size: "2gb"
