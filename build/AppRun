@@ -1,0 +1,35 @@
+#!/bin/bash
+# AppRun — OpenClaw AppImage entry point
+#
+# Default: start Gateway (HTTP/WS service)
+# CLI:     pass any arguments to openclaw CLI
+#
+# Examples:
+#   ./OpenClaw.AppImage              → start Gateway on port 9090
+#   ./OpenClaw.AppImage --version    → show version
+#   ./OpenClaw.AppImage chat         → CLI chat mode
+
+APPDIR="$(dirname "$(readlink -f "$0")")"
+
+# Paths inside AppImage
+NODE="$APPDIR/usr/lib/node/node"
+OPENCLAW_DIR="$APPDIR/usr/lib/node_modules/openclaw"
+UV="$APPDIR/usr/lib/bin/uv"
+
+# Make uv available to OpenClaw's MCP server spawning
+export PATH="$APPDIR/usr/lib/bin:$PATH"
+
+# Set NODE_PATH for CJS require() fallback
+export NODE_PATH="$APPDIR/usr/lib/node_modules"
+
+# Temp/cache directories — write to user space, not the read-only AppImage
+export UV_CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/openclaw/uv"
+export OPENCLAW_DATA_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/openclaw"
+
+if [[ $# -eq 0 ]]; then
+  # No arguments → start Gateway
+  exec "$NODE" "$OPENCLAW_DIR/dist/entry.js" --gateway "$@"
+else
+  # Arguments provided → CLI mode
+  exec "$NODE" "$OPENCLAW_DIR/openclaw.mjs" "$@"
+fi

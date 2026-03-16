@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=OpenClaw
+Comment=OpenClaw AI Agent Gateway
+Exec=AppRun
+Icon=openclaw
+Categories=Development;
+Terminal=true

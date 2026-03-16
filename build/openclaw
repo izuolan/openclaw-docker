@@ -1,0 +1,18 @@
+#!/bin/bash
+# openclaw — wrapper script for OpenClaw AppImage
+# Automatically uses --appimage-extract-and-run when FUSE is unavailable (e.g. Docker)
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+APPIMAGE=$(ls "$SCRIPT_DIR"/OpenClaw-*.AppImage 2>/dev/null | head -1)
+
+if [[ -z "$APPIMAGE" ]]; then
+  echo "Error: No OpenClaw AppImage found in $SCRIPT_DIR"
+  exit 1
+fi
+
+# Check if FUSE is available
+if [[ -e /dev/fuse ]]; then
+  exec "$APPIMAGE" "$@"
+else
+  exec "$APPIMAGE" --appimage-extract-and-run "$@"
+fi

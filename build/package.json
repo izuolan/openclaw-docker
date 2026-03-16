@@ -1,0 +1,9 @@
+{
+  "name": "openclaw-appimage",
+  "version": "1.0.0",
+  "private": true,
+  "description": "OpenClaw standalone AppImage builder",
+  "dependencies": {
+    "openclaw": "2026.3.8"
+  }
+}

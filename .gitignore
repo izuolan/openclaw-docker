@@ -1,0 +1,8 @@
+data
+bin
+.env
+build/node_modules
+build/dist
+build/squashfs-root
+build/work
+build/package-lock.json

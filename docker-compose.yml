@@ -1,0 +1,35 @@
+services:
+  openclaw-desktop:
+    image: zuolan/openclaw-desktop
+    container_name: openclaw-desktop
+    restart: unless-stopped
+    security_opt:
+      - seccomp:unconfined
+    ports:
+      - "3001:3001"     # VNC Web Desktop (HTTPS)
+      - "18789:18789"   # OpenClaw Gateway API
+    volumes:
+      - ./data/webtop-config:/config/
+      - ./data/openclaw-config:/config/.openclaw
+      - ./data/openclaw-workspace:/config/workspace
+      - ./build/dist/:/dist/
+    environment:
+      - PUID=0
+      - PGID=0
+      - TZ=${TZ:-Asia/Shanghai}
+      - CUSTOM_USER=${VNC_USER:-user}
+      - PASSWORD=${VNC_PASSWORD:-password}
+      - TITLE=OpenClaw Desktop
+      - OPENCLAW_HOME=/config/
+      - GATEWAY_TOKEN=12345
+      - NODE_ENV=production
+      - PLAYWRIGHT_BROWSERS_PATH=/usr/lib/playwright
+    shm_size: "2gb"
+    deploy:
+      resources:
+        limits:
+          cpus: '4.0'
+          memory: 4G
+        reservations:
+          cpus: '1.0'
+          memory: 1G
