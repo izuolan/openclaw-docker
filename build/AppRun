@@ -5,7 +5,7 @@
 # CLI:     pass any arguments to openclaw CLI
 #
 # Examples:
-#   ./OpenClaw.AppImage              → start Gateway on port 9090
+#   ./OpenClaw.AppImage              → start Gateway on port 18789
 #   ./OpenClaw.AppImage --version    → show version
 #   ./OpenClaw.AppImage chat         → CLI chat mode
 

@@ -22,14 +22,12 @@ RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
     && apt-get install -y nodejs \
     && rm -rf /var/lib/apt/lists/*
 
-# Install pnpm and openclaw
-ENV PNPM_HOME=/root/.pnpm_global
-ENV PATH="/root/.pnpm_global:$PATH"
-RUN npm install -g pnpm # && pnpm -g install openclaw
-
-# Install Playwright chromium for browser MCP
+# Install Playwright system deps + symlink webtop's Chromium into Playwright's expected path
 ENV PLAYWRIGHT_BROWSERS_PATH=/usr/lib/playwright
 RUN npx playwright install-deps chromium \
+    && CHROMIUM_REVISION=$(npx playwright install chromium --dry-run 2>&1 | grep -oP 'chromium-\K\d+' || echo "1155") \
+    && mkdir -p /usr/lib/playwright/chromium-${CHROMIUM_REVISION}/chrome-linux \
+    && ln -s /usr/bin/chromium /usr/lib/playwright/chromium-${CHROMIUM_REVISION}/chrome-linux/chrome \
     && mkdir -p /usr/share/applications \
     && cat > /usr/share/applications/chromium.desktop <<'EOF'
 [Desktop Entry]
@@ -49,6 +47,3 @@ RUN chmod +x /custom-services.d/openclaw
 
 # Ports: 3001 = VNC web desktop, 18789 = OpenClaw gateway
 EXPOSE 3001 18789
-
-# Volumes for persistence
-VOLUME ["/config", "/home/node/.openclaw", "/home/node/workspace"]
