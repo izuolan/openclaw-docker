@@ -43,7 +43,8 @@ WORKDIR /config
 
 # Copy startup script
 COPY start-openclaw.sh /custom-services.d/openclaw
-RUN chmod +x /custom-services.d/openclaw
+COPY openclaw /bin/openclaw
+RUN chmod a+x /custom-services.d/openclaw && chmod a+x /bin/openclaw
 
 # Ports: 3001 = VNC web desktop, 18789 = OpenClaw gateway
 EXPOSE 3001 18789
