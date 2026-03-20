@@ -26,10 +26,4 @@ export NODE_PATH="$APPDIR/usr/lib/node_modules"
 export UV_CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/openclaw/uv"
 export OPENCLAW_DATA_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/openclaw"
 
-if [[ $# -eq 0 ]]; then
-  # No arguments → start Gateway
-  exec "$NODE" "$OPENCLAW_DIR/dist/entry.js" --gateway "$@"
-else
-  # Arguments provided → CLI mode
-  exec "$NODE" "$OPENCLAW_DIR/openclaw.mjs" "$@"
-fi
+exec "$NODE" "$OPENCLAW_DIR/openclaw.mjs" "$@"
