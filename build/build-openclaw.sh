@@ -17,7 +17,7 @@ WORK_DIR="$SCRIPT_DIR/work"
 
 # ── 默认参数 ──────────────────────────────────────────────────────────────
 
-NODE_VERSION="22.14.0"
+NODE_VERSION="22.22.1"
 UV_VERSION="0.10.0"
 ARCH=""
 

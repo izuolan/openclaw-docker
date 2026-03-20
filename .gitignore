@@ -6,3 +6,4 @@ build/dist
 build/squashfs-root
 build/work
 build/package-lock.json
+.DS_Store
