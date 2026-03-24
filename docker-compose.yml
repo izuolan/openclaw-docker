@@ -1,22 +1,25 @@
 services:
   openclaw-desktop:
-    image: zuolan/openclaw-desktop
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: openclaw-desktop
     restart: unless-stopped
     security_opt:
       - seccomp:unconfined
+    # network_mode: host
     ports:
       - "3001:3001"     # VNC Web Desktop (HTTPS)
       - "18789:18789"   # OpenClaw Gateway API
     volumes:
-      - ./data/webtop-config:/config/
-      - ./data/openclaw-config:/config/.openclaw
-      - ./data/openclaw-workspace:/config/workspace
-      - ./build/dist/:/dist/
+      - /data/webtop:/config/
+      - /data/openclaw/.openclaw:/config/.openclaw
+      - /data/history:/config/workspace
+      - /opt/openclaw/:/opt/openclaw/
     environment:
       - PUID=0
       - PGID=0
-      - TZ=${TZ:-Asia/Shanghai}
+      - TZ=${TZ:-America/New_York}
       - CUSTOM_USER=${VNC_USER:-user}
       - PASSWORD=${VNC_PASSWORD:-password}
       - TITLE=OpenClaw Desktop
@@ -29,7 +32,7 @@ services:
       resources:
         limits:
           cpus: '4.0'
-          memory: 4G
+          memory: 8G
         reservations:
           cpus: '1.0'
           memory: 1G

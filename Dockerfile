@@ -6,21 +6,23 @@ FROM linuxserver/webtop:ubuntu-xfce
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl \
-    git \
-    jq \
-    unzip \
-    xz-utils \
-    ca-certificates \
-    gnupg \
-    fonts-noto-cjk \
-    fonts-noto-color-emoji \
+    curl wget \
+    git jq vim \
+    procps ripgrep fd-find less tree unzip xz-utils \
+    ca-certificates gnupg build-essential \
+    fonts-noto-cjk fonts-noto-color-emoji \
+    python3 python3-pip python3-venv \
+    iproute2 iputils-ping dnsutils traceroute \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Node.js 22
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
     && apt-get install -y nodejs \
     && rm -rf /var/lib/apt/lists/*
+
+RUN npm install -g axios fs-extra dayjs lodash cheerio pdf-lib sharp puppeteer
+
+RUN pip install requests beautifulsoup4 lxml pdfplumber PyPDF2 python-docx openpyxl pandas Pillow pyyaml python-dotenv
 
 # Install Playwright system deps + symlink webtop's Chromium into Playwright's expected path
 ENV PLAYWRIGHT_BROWSERS_PATH=/usr/lib/playwright
