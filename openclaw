@@ -15,5 +15,5 @@ fi
 if [[ -e /dev/fuse ]]; then
   exec "$APPIMAGE" "$@"
 else
-  exec "$APPIMAGE" --appimage-extract-and-run "$@"
+  exec "$APPIMAGE" --appimage-extract-and-run "$@" --allow-unconfigured
 fi

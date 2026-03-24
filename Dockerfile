@@ -22,16 +22,17 @@ RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
     && rm -rf /var/lib/apt/lists/*
 
 RUN npm install -g clawhub axios fs-extra dayjs lodash cheerio pdf-lib sharp puppeteer
-RUN clawhub install gog \
-    && clawhub install summarize \
-    && clawhub install nano-pdf \
-    && clawhub install agent-browser \
-    && clawhub install home-assistant \
-    && clawhub install mission-control \
-    && clawhub install weather \
-    && clawhub install edge-tts \
-    && clawhub install youtube-ultimate \
-    && clawhub install file-organization
+RUN curl -fsSL https://skillhub-1388575217.cos.ap-guangzhou.myqcloud.com/install/install.sh | bash  -s -- --no-skills
+# RUN clawhub install gog \
+#     && clawhub install summarize \
+#     && clawhub install nano-pdf \
+#     && clawhub install agent-browser \
+#     && clawhub install home-assistant \
+#     && clawhub install mission-control \
+#     && clawhub install weather \
+#     && clawhub install edge-tts \
+#     && clawhub install youtube-ultimate \
+#     && clawhub install file-organization
 RUN pip install requests beautifulsoup4 lxml pdfplumber PyPDF2 python-docx openpyxl pandas Pillow pyyaml python-dotenv
 
 # Install Playwright system deps + symlink webtop's Chromium into Playwright's expected path
