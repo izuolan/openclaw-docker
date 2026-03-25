@@ -31,4 +31,4 @@ fi
 
 # Start OpenClaw gateway
 echo "[openclaw] Starting OpenClaw gateway..."
-exec /bin/openclaw gateway
+exec /bin/openclaw gateway --allow-unconfigured
