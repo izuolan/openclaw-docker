@@ -17,6 +17,25 @@ CONFIG_FILE="$CONFIG_DIR/openclaw.json"
 mkdir -p "$OPENCLAW_HOME"
 mkdir -p "$CONFIG_DIR"
 
+update_gateway_config() {
+    if [[ ! -f "$CONFIG_FILE" ]]; then
+        echo "[openclaw] Config file not found, skip gateway update: $CONFIG_FILE"
+        return
+    fi
+
+    if command -v jq >/dev/null 2>&1; then
+        echo "[openclaw] Ensuring gateway is in remote/lan mode via jq"
+
+        tmpfile="$(mktemp)"
+        jq '.gateway.port = 18789
+            | .gateway.mode = "remote"
+            | .gateway.bind = "lan"' \
+            "$CONFIG_FILE" > "$tmpfile" && mv "$tmpfile" "$CONFIG_FILE"
+    else
+        echo "[openclaw] jq not found, skip automatic gateway update"
+    fi
+}
+
 # First-run setup
 if [[ ! -f "$CONFIG_FILE" ]]; then
     echo "[openclaw] First run detected, config not found: $CONFIG_FILE"
@@ -27,6 +46,12 @@ if [[ ! -f "$CONFIG_FILE" ]]; then
         echo "[openclaw] Error: setup finished but config file was not created"
         exit 1
     fi
+
+    # 首次生成后，更新 gateway 配置
+    update_gateway_config
+else
+    # 非首次启动也确保 gateway 为 remote/lan，防止被手动改成 local/127.0.0.1
+    update_gateway_config
 fi
 
 # Start OpenClaw gateway
