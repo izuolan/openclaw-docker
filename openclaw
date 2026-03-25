@@ -22,13 +22,6 @@ SKILLHUB_DIR="$HOME/.skillhub"
 install_skillhub_if_needed() {
   # 如果已经有可执行的 skillhub，就跳过安装
   if command -v skillhub >/dev/null 2>&1; then
-    echo "[openclaw] skillhub already in PATH: $(command -v skillhub)"
-    return
-  fi
-
-  if [ -x "$SKILLHUB_BIN" ]; then
-    echo "[openclaw] skillhub binary exists at $SKILLHUB_BIN, adding to PATH"
-    export PATH="$HOME/.local/bin:$PATH"
     return
   fi
 
