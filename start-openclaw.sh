@@ -29,7 +29,14 @@ update_gateway_config() {
         tmpfile="$(mktemp)"
         jq '.gateway.port = 18789
             | .gateway.mode = "remote"
-            | .gateway.bind = "lan"' \
+            | .gateway.bind = "lan"
+            | .gateway.remote.url = "ws://127.0.0.1:18789"
+            | .browser.enabled = true
+            | .browser.defaultProfile = "openclaw"
+            | .browser.headless = true
+            | .browser.attachOnly = false
+            | .browser.noSandbox = true
+            ' \
             "$CONFIG_FILE" > "$tmpfile" && mv "$tmpfile" "$CONFIG_FILE"
     else
         echo "[openclaw] jq not found, skip automatic gateway update"
