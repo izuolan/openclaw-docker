@@ -13,7 +13,6 @@ services:
       - "18789:18789"   # OpenClaw Gateway API
     volumes:
       - /data/webtop:/config/
-      - /data/openclaw/.openclaw:/config/.openclaw
       - /data/history:/config/workspace
       - /opt/openclaw/:/opt/openclaw/
     environment:
