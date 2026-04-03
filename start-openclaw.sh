@@ -34,8 +34,6 @@ update_gateway_config() {
             | .gateway.mode = "remote"
             | .gateway.bind = "lan"
             | .gateway.remote.url = "ws://127.0.0.1:18789"
-            | .gateway.reload = (.gateway.reload // {})
-            | .gateway.reload.mode = "hot"
             | .browser.enabled = true
             | .browser.defaultProfile = "openclaw"
             | .browser.headless = true
@@ -64,5 +62,50 @@ else
     update_gateway_config
 fi
 
-echo "[openclaw] Starting OpenClaw gateway (foreground → Docker logs). Config updates use hot reload where supported."
+GATEWAY_PORT=18789
+
+is_port_in_use() {
+    if command -v ss >/dev/null 2>&1; then
+        ss -tln 2>/dev/null | grep -q ":${GATEWAY_PORT} "
+    else
+        (echo >/dev/tcp/127.0.0.1/${GATEWAY_PORT}) 2>/dev/null
+    fi
+}
+
+get_openclaw_pid() {
+    pgrep -f "openclaw gateway" 2>/dev/null | head -1
+}
+
+cleanup_and_exit() {
+    local pid
+    pid=$(get_openclaw_pid)
+    if [[ -n "$pid" ]]; then
+        echo "[openclaw] Forwarding signal to openclaw (PID=$pid)"
+        kill "$pid" 2>/dev/null || true
+    fi
+    exit 0
+}
+
+if is_port_in_use; then
+    EXISTING_PID=$(get_openclaw_pid)
+    if [[ -n "$EXISTING_PID" ]] && kill -0 "$EXISTING_PID" 2>/dev/null; then
+        echo "[openclaw] Self-restart detected: process $EXISTING_PID already on port $GATEWAY_PORT. Monitoring instead of starting a new instance."
+        trap cleanup_and_exit SIGTERM SIGINT SIGHUP
+
+        while kill -0 "$EXISTING_PID" 2>/dev/null; do
+            sleep 5
+        done
+
+        echo "[openclaw] Adopted process $EXISTING_PID exited. Waiting for port release..."
+        sleep 2
+    else
+        echo "[openclaw] Port $GATEWAY_PORT in use but no openclaw process found. Waiting for port release..."
+        while is_port_in_use; do
+            sleep 3
+        done
+        sleep 1
+    fi
+fi
+
+echo "[openclaw] Starting OpenClaw gateway (foreground). Config updates use hot reload where supported."
 exec /bin/openclaw gateway --allow-unconfigured
