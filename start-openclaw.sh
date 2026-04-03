@@ -34,6 +34,8 @@ update_gateway_config() {
             | .gateway.mode = "remote"
             | .gateway.bind = "lan"
             | .gateway.remote.url = "ws://127.0.0.1:18789"
+            | .gateway.reload = (.gateway.reload // {})
+            | .gateway.reload.mode = "hybrid"
             | .gateway.http.endpoints.chatCompletions.enabled = true
             | .browser.enabled = true
             | .browser.defaultProfile = "openclaw"
