@@ -18,7 +18,7 @@ services:
     environment:
       - PUID=0
       - PGID=0
-      - TZ=${TZ:-America/New_York}
+      - TZ=${TZ:-America/Los_Angeles}
       - CUSTOM_USER=${VNC_USER:-user}
       - PASSWORD=${VNC_PASSWORD:-password}
       - TITLE=OpenClaw Desktop
