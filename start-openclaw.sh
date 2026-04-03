@@ -24,17 +24,18 @@ update_gateway_config() {
     fi
 
     if command -v jq >/dev/null 2>&1; then
-        echo "[openclaw] Ensuring gateway is in remote/lan mode; disabling config-file live reload (no in-process restart)"
+        echo "[openclaw] Ensuring gateway is in remote/lan mode; reload.mode=hot (in-process only)"
 
         tmpfile="$(mktemp)"
-        # gateway.reload.mode "off" = ignore openclaw.json edits until explicit restart.
-        # Prefer restarting the container so logs stay on one process attached to Docker.
+        # "hot" = apply config changes in-process (e.g. model switch) without replacing the gateway process,
+        # so Docker/s6 still see one PID and logs stay attached. Avoids default "hybrid" falling back to
+        # full restart (port fights with s6). If a future change truly needs a process restart, restart the container.
         jq '.gateway.port = 18789
             | .gateway.mode = "remote"
             | .gateway.bind = "lan"
             | .gateway.remote.url = "ws://127.0.0.1:18789"
             | .gateway.reload = (.gateway.reload // {})
-            | .gateway.reload.mode = "off"
+            | .gateway.reload.mode = "hot"
             | .browser.enabled = true
             | .browser.defaultProfile = "openclaw"
             | .browser.headless = true
@@ -63,5 +64,5 @@ else
     update_gateway_config
 fi
 
-echo "[openclaw] Starting OpenClaw gateway (foreground → Docker logs). After changing config, restart the container to apply."
+echo "[openclaw] Starting OpenClaw gateway (foreground → Docker logs). Config updates use hot reload where supported."
 exec /bin/openclaw gateway --allow-unconfigured
