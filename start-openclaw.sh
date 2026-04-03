@@ -24,7 +24,7 @@ update_gateway_config() {
     fi
 
     if command -v jq >/dev/null 2>&1; then
-        echo "[openclaw] Ensuring gateway is in remote/lan mode; reload.mode=hot (in-process only)"
+        echo "[openclaw] Ensuring gateway is in remote/lan mode;"
 
         tmpfile="$(mktemp)"
         # "hot" = apply config changes in-process (e.g. model switch) without replacing the gateway process,
