@@ -79,6 +79,34 @@ get_openclaw_pid() {
     pgrep -f "openclaw gateway" 2>/dev/null | head -1
 }
 
+wait_for_existing_gateway() {
+    local pid
+
+    trap cleanup_and_exit SIGTERM SIGINT SIGHUP
+
+    while true; do
+        pid=$(get_openclaw_pid)
+        if [[ -n "$pid" ]] && kill -0 "$pid" 2>/dev/null; then
+            echo "[openclaw] Existing gateway detected (PID=$pid). Monitoring instead of starting a new instance."
+            while kill -0 "$pid" 2>/dev/null; do
+                sleep 2
+            done
+
+            echo "[openclaw] Gateway process $pid exited. Checking whether restart spawned a replacement..."
+            sleep 2
+            continue
+        fi
+
+        if is_port_in_use; then
+            echo "[openclaw] Port $GATEWAY_PORT still busy. Waiting for release before deciding whether to start."
+            sleep 2
+            continue
+        fi
+
+        break
+    done
+}
+
 cleanup_and_exit() {
     local pid
     pid=$(get_openclaw_pid)
@@ -92,21 +120,11 @@ cleanup_and_exit() {
 if is_port_in_use; then
     EXISTING_PID=$(get_openclaw_pid)
     if [[ -n "$EXISTING_PID" ]] && kill -0 "$EXISTING_PID" 2>/dev/null; then
-        echo "[openclaw] Self-restart detected: process $EXISTING_PID already on port $GATEWAY_PORT. Monitoring instead of starting a new instance."
-        trap cleanup_and_exit SIGTERM SIGINT SIGHUP
-
-        while kill -0 "$EXISTING_PID" 2>/dev/null; do
-            sleep 5
-        done
-
-        echo "[openclaw] Adopted process $EXISTING_PID exited. Waiting for port release..."
-        sleep 2
+        echo "[openclaw] Self-restart detected: process $EXISTING_PID already on port $GATEWAY_PORT."
+        wait_for_existing_gateway
     else
-        echo "[openclaw] Port $GATEWAY_PORT in use but no openclaw process found. Waiting for port release..."
-        while is_port_in_use; do
-            sleep 3
-        done
-        sleep 1
+        echo "[openclaw] Port $GATEWAY_PORT in use but no openclaw process found yet."
+        wait_for_existing_gateway
     fi
 fi
 
